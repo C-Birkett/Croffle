@@ -1,0 +1,14 @@
+/bin/
+/build/
+/map/
+/obj/
+/ogre3d/*
+/res/
+
+*.json
+*.AppImage
+*.zip
+
+/.clangd/
+/.vs/
+/.vscode/
