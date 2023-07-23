@@ -1,0 +1,6 @@
+font CozetteVector
+{
+  type truetype
+  source CozetteVector.ttf
+	size 60
+}

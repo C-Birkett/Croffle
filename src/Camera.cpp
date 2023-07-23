@@ -65,9 +65,9 @@
 
  void Camera::Pitch(const Ogre::Radian& angle)
  {
-   Ogre::Vector3 pos = m_CameraNode->getPosition();
+   //Ogre::Vector3 pos = m_CameraNode->getPosition();
     m_CameraPitchNode->pitch(angle);
-   pos = m_CameraNode->getPosition();
+   //pos = m_CameraNode->getPosition();
     //m_CameraRollNode->needUpdate();
  }
 

@@ -1,9 +1,8 @@
 /bin/
 /build/
-/map/
+/mapping/
 /obj/
 /ogre3d/*
-/res/
 
 *.json
 *.AppImage

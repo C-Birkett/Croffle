@@ -23,8 +23,10 @@
 #include "GuiManager.h"
 #include "PlayerController.h"
 
+#define MAP_DIR RES_DIR "/maps"
+
 #define MAP "Croffle2.bsp"
-#define MAPPACK RES_DIR "/Croffle.pk3"
+#define MAPPACK MAP_DIR "/Croffle.pk3"
 //#define MAP "oa_rpg3dm2.bsp"
 
 namespace App 
@@ -109,7 +111,7 @@ namespace App
     // make new resource group
     Ogre::ResourceGroupManager& rgm = Ogre::ResourceGroupManager::getSingleton();
     rgm.setWorldResourceGroupName("BSPWorld");
-    rgm.addResourceLocation(RES_DIR, "FileSystem", "BSPWorld");
+    rgm.addResourceLocation(MAP_DIR, "FileSystem", "BSPWorld");
     rgm.addResourceLocation(MAPPACK, "Zip", "BSPWorld");
     
     // create scene manager
@@ -144,8 +146,8 @@ namespace App
       App::GetGuiManager()->m_ImGuiInputListener.get()
       });
 
-    //App::GetAppContext()->addInputListener(g_InputChain);
-    App::GetAppContext()->addInputListener(g_PlayerController);
+    App::GetAppContext()->addInputListener(g_InputChain);
+    //App::GetAppContext()->addInputListener(g_PlayerController);
  
     return success;
   }
