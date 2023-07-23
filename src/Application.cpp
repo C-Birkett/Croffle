@@ -21,17 +21,22 @@
 #include "KeypressManager.h"
 #include "CameraManager.h"
 #include "GuiManager.h"
+#include "PlayerController.h"
+
+#define MAP "Croffle2.bsp"
+#define MAPPACK RES_DIR "/Croffle.pk3"
+//#define MAP "oa_rpg3dm2.bsp"
 
 namespace App 
 {
   
   // global objects
-  static OgreBites::ApplicationContext  g_AppContext("OgreTest");
+  static OgreBites::ApplicationContext  g_AppContext("Croffle");
   static Ogre::SceneManager*            g_SceneManager;
   static KeypressManager*               g_KeypressManager;
   static CameraManager*                 g_CameraManager;
   static GuiManager*                    g_GuiManager;
-  //static InputManager*                  g_InputManager;
+  static PlayerController*              g_PlayerController;
   static OgreBites::InputListenerChain* g_InputChain;
 
   // global access
@@ -40,6 +45,7 @@ namespace App
   KeypressManager*                GetKeypressManager() {return g_KeypressManager;}  
   CameraManager*                  GetCameraManager() {return g_CameraManager;}
   GuiManager*                     GetGuiManager() {return g_GuiManager;}
+  PlayerController*               GetPlayerController() {return g_PlayerController;}
 
   // Factories
   KeypressManager* CreateKeypressManager()
@@ -71,6 +77,16 @@ namespace App
     return g_GuiManager;
   }
 
+  PlayerController* CreatePlayerController()
+  {
+    assert(!g_PlayerController);
+    
+    g_PlayerController = new PlayerController;
+    g_PlayerController->Init();
+    
+    return g_PlayerController;
+  }
+
   // app control
   void CreateTestScene();
 
@@ -89,10 +105,23 @@ namespace App
     // init root;
     g_AppContext.setup();
     //g_AppContext.setWindowGrab(true);
+
+    // make new resource group
+    Ogre::ResourceGroupManager& rgm = Ogre::ResourceGroupManager::getSingleton();
+    rgm.setWorldResourceGroupName("BSPWorld");
+    rgm.addResourceLocation(RES_DIR, "FileSystem", "BSPWorld");
+    rgm.addResourceLocation(MAPPACK, "Zip", "BSPWorld");
     
     // create scene manager
-    g_SceneManager = g_AppContext.getRoot()->createSceneManager();
+    g_SceneManager = g_AppContext.getRoot()->createSceneManager("BspSceneManager");
     g_SceneManager->addRenderQueueListener(Ogre::OverlaySystem::getSingletonPtr());
+
+    // create scene
+    // load bsp world
+    rgm.setCustomStagesForResourceGroup("BSPWorld", g_SceneManager->estimateWorldGeometry(MAP));
+    rgm.initialiseResourceGroup("BSPWorld");
+    rgm.loadResourceGroup("BSPWorld");
+    CreateTestScene();
     
     // create gui manager
     CreateGuiManager();
@@ -103,19 +132,21 @@ namespace App
 
     CreateCameraManager();
     CreateKeypressManager();
+    CreatePlayerController();
 
+    // setup PlayerController
+    g_PlayerController->SetCamera(g_CameraManager->m_Camera);
+
+    // add all input listeners to chain
     g_InputChain = new OgreBites::InputListenerChain({
       g_KeypressManager,
-      App::GetGuiManager()->m_ImGuiInputListener.get(),
-      g_CameraManager->m_CameraMan
+      g_PlayerController,
+      App::GetGuiManager()->m_ImGuiInputListener.get()
       });
 
-    App::GetAppContext()->addInputListener(g_InputChain);
+    //App::GetAppContext()->addInputListener(g_InputChain);
+    App::GetAppContext()->addInputListener(g_PlayerController);
  
-    
-    g_AppContext.createDummyScene();
-    //CreateTestScene();
-
     return success;
   }
 
@@ -139,27 +170,26 @@ namespace App
 void CreateTestScene()
 {
   using namespace Ogre;
+  g_SceneManager->setWorldGeometry(MAP);
   SceneNode* rootNode = g_SceneManager->getRootSceneNode();
 
   // scene setup
-  g_SceneManager->setAmbientLight(ColourValue(0,0,0));
-  g_SceneManager->setShadowTechnique(ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
+  //g_SceneManager->setAmbientLight(ColourValue(0,0,0));
+  //g_SceneManager->setShadowTechnique(ShadowTechnique::SHADOWTYPE_STENCIL_ADDITIVE);
 
   // without light we would just get a black screen    
   
-  /*
   Light* light = g_SceneManager->createLight("MainLight");
   SceneNode* lightNode = rootNode->createChildSceneNode();
   lightNode->setPosition(0, 10, 15);
   lightNode->attachObject(light);
-  */
  
   // render some ogres
   Entity* ogre1 = g_SceneManager->createEntity("ogrehead.mesh");
   ogre1->setCastShadows(true);
   SceneNode* ogreNode = rootNode->createChildSceneNode();
   ogreNode->setPosition(0, 50, 0);
-  ogreNode->setScale(2, 1.2, 1);
+  ogreNode->setScale(1, 1, 1);
   ogreNode->attachObject(ogre1);
   
   /*
@@ -169,6 +199,7 @@ void CreateTestScene()
   ogre2Node->attachObject(ogre2);
   */
   
+  /*
   Plane plane(Vector3::UNIT_Y, 0);
   MeshManager::getSingleton().createPlane(
     "Ground", RGN_DEFAULT,
@@ -180,9 +211,10 @@ void CreateTestScene()
   
   Entity* groundEntity = g_SceneManager->createEntity("Ground");
   rootNode->createChildSceneNode()->attachObject(groundEntity);
-  
+
   groundEntity->setCastShadows(false);
   groundEntity->setMaterialName("Examples/Rockwall");
+  */
   
   Light* spotlight = g_SceneManager->createLight("Spotlight");
   spotlight->setType(Light::LT_SPOTLIGHT);

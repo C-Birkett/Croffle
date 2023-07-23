@@ -19,10 +19,12 @@ set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(SRC_DIR ${ROOT_DIR}/src)
 set(OBJ_DIR ${ROOT_DIR}/obj)
 set(LIB_DIR ${OBJ_DIR}/lib)
-set(BIN_DIR ${ROOT_DIR}/obj)
+set(BIN_DIR ${ROOT_DIR}/bin)
 set(RES_DIR ${ROOT_DIR}/res)
 set(MAP_DIR ${ROOT_DIR}/map)
 set(OGRE_DIR ${ROOT_DIR}/ogre3d)
+
+add_definitions(-DRES_DIR="${RES_DIR}")
 
 # setup Ogre 
 find_package(OGRE 
@@ -32,6 +34,8 @@ find_package(OGRE
     PATHS ${OGRE_DIR}
 )
 
+set(OGRE_CONFIG_DIR ${BIN_DIR})
+message(OGRE_CONFIG_DIR=${OGRE_CONFIG_DIR})
 message(OGRE_LIBRARIES = ${OGRE_LIBRARIES})
 
 add_executable(${APPNAME} ./main.cpp)

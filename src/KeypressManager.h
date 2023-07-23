@@ -3,8 +3,6 @@
 #include <Ogre.h>
 #include <OgreInput.h>
 
-#include "Application.h"
-
 class KeypressManager : public OgreBites::InputListener
 {
 public:

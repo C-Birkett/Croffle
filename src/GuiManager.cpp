@@ -24,13 +24,6 @@ GuiManager::~GuiManager()
 
 void GuiManager::Init()
 {
-    /*
-    Ogre::ResourceGroupManager::getSingleton().addResourceLocation("/home/conan/Work/OgreTest/res/fonts", "FileSystem", "FONTS", true);
-    Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("FONTS");
-    Ogre::ResourceGroupManager::getSingleton().loadResourceGroup("FONTS");
-    Ogre::FontPtr font = Ogre::FontManager::getSingleton().getByName("CozetteVector");
-    */
-
     m_ImGuiOverlay = new Ogre::ImGuiOverlay();
     
     //m_ImGuiOverlay->addFont("CozetteVector", "FONTS");
@@ -49,7 +42,7 @@ void GuiManager::preViewportUpdate(const Ogre::RenderTargetViewportEvent& evt)
     if(!evt.source->getOverlaysEnabled()) return;
 
     Ogre::ImGuiOverlay::NewFrame();
-    ImGui::ShowDemoWindow();
+    //ImGui::ShowDemoWindow();
 }
 
 
